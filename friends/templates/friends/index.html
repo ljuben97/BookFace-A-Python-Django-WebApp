@@ -1,0 +1,104 @@
+{% extends 'post/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    {% if requestedFrom.count > 0 %}
+        <h1>Friend Requests:</h1>
+    {% endif %}
+    {% for request in requestedFrom %}
+
+            <div class="content-section">
+                <div class="media">
+                    <img alt="Alt Image" class="rounded-circle account-img" src="{{ request.image }}">
+                    <div class="media-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <a class="account-heading mr-2" href="{% url 'user-profile' request.user.id %}">{{ request.user.username }}</a>
+                                <p class="text-secondary">{{ request.user.email }}</p>
+                            </div>
+                            <div class="col-6">
+                                 <form method="post" action="{% url 'handle-friend-request' %}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <select class="form-control" name="selected">
+                                        <option value="accept">Accept</option>
+                                        <option value="decline">Decline</option>
+                                    </select>
+                                </div>
+                                     <div class="form-group" style="visibility: hidden">
+                                        <input class="form-control" name="requesting" type="number" value="{{ request.user.id }}">
+                                    </div>
+                                <div class="form-group">
+                                    <button type="submit" class="form-control">Confirm</button>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    {% endfor %}
+
+    {% if friends.count > 0 %}
+        <h1>Friends</h1>
+    {% endif %}
+    {% for friend in friends %}
+
+            <div class="content-section">
+                <div class="media">
+                    <img alt="Alt Image" class="rounded-circle account-img" src="{{ friend.image }}">
+                    <div class="media-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <a class="account-heading mr-2" href="{% url 'user-profile' friend.user.id %}">{{ friend.user.username }}</a>
+                                <p class="text-secondary">{{ friend.user.email }}</p>
+                            </div>
+                            <div class="col-6">
+                                <form method="post" action="{% url 'unfriend' %}">
+                                {% csrf_token %}
+                                    <div class="form-group" style="visibility: hidden">
+                                        <input class="form-control" name="requestedTo" type="number" value="{{ friend.user.id }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="form-control">Unfriend</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    {% endfor %}
+
+    {% if requests.count > 0 %}
+        <h1>Requests Sent:</h1>
+    {% endif %}
+    {% for request in requests %}
+
+            <div class="content-section">
+                <div class="media">
+                    <img alt="Alt Image" class="rounded-circle account-img" src="{{ request.image }}">
+                    <div class="media-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <a class="account-heading mr-2" {% url 'user-profile' request.user.id%}>{{ request.user.username }}</a>
+                                <p class="text-secondary">{{ request.user.email }}</p>
+                            </div>
+                            <div class="col-6">
+                              <form method="post" action="{% url 'delete-friend-request' %}">
+                                {% csrf_token %}
+                                <div class="form-group" style="visibility: hidden">
+                                    <input class="form-control" name="requestedTo" type="number" value="{{ request.user.id }}">
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="form-control">Remove Friend Request</button>
+                                </div>
+                              </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    {% endfor %}
+{% endblock content %}

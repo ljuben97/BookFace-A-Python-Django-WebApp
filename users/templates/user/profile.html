@@ -1,0 +1,78 @@
+{% extends "post/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="content-section">
+      <div class="media">
+          <div class="row">
+              <div class="col-6">
+                <img class="rounded-circle account-img" alt="Alt Image" src="{{ profile.image }}">
+                <div class="media-body">
+                  <h2 class="account-heading">{{ profile.user.username }}</h2>
+                    <h3>{{ profile.user.first_name }}</h3>
+                    <h3>{{ profile.user.last_name }}</h3>
+                  <p class="text-secondary">{{ profile.user.email }}</p>
+                </div>
+              </div>
+              <div class="col-6">
+                  {% if fr == 2 %}
+                      <h4>Login</h4>
+
+                  {% elif fr == 0 %}
+                      <h4>Friends</h4>
+                      <form method="post" action="{% url 'unfriend' %}">
+                        {% csrf_token %}
+                        <div class="form-group" style="visibility: hidden">
+                            <input class="form-control" name="requestedTo" type="number" value="{{ profile.user.id }}">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="form-control">Unfriend</button>
+                        </div>
+                      </form>
+
+                  {% elif fr == 1 %}
+                      <h4>Friend Request Sent</h4>
+                      <form method="post" action="{% url 'delete-friend-request' %}">
+                        {% csrf_token %}
+                        <div class="form-group" style="visibility: hidden">
+                            <input class="form-control" name="requestedTo" type="number" value="{{ profile.user.id }}">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="form-control">Remove Friend Request</button>
+                        </div>
+                      </form>
+
+                  {% elif fr == -1 %}
+                      <h4>{{ profile.user.username }} wants to be friends</h4>
+                      <form method="post" action="{% url 'handle-friend-request' %}">
+                          {% csrf_token %}
+                        <div class="form-group">
+                            <select class="form-control" name="selected">
+                                <option value="accept">Accept</option>
+                                <option value="decline">Decline</option>
+                            </select>
+                        </div>
+                            <div class="form-group" style="visibility: hidden">
+                                <input class="form-control" name="requesting" type="number" value="{{ profile.user.id }}">
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="form-control">Confirm</button>
+                            </div>
+                      </form>
+
+                  {% elif fr == -2 %}
+                      <h4>Not Friends</h4>
+                      <form method="post" action="{% url 'send-friend-request' %}">
+                        {% csrf_token %}
+                        <div class="form-group" style="visibility: hidden">
+                            <input class="form-control" name="requestedTo" type="number" value="{{ profile.user.id }}">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="form-control">Add Friend</button>
+                        </div>
+                      </form>
+                  {% endif %}
+              </div>
+          </div>
+      </div>
+    </div>
+{% endblock content %}

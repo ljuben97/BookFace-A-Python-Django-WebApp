@@ -1,0 +1,54 @@
+{% extends 'post/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <h1>What's on your mind {{ user.username }}?</h1>
+
+    <form method="post" action="{% url 'new-post' %}">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                {{ form|crispy}}
+            </fieldset>
+            <div class="form-group">
+                <button type="submit" class="btn btn-outline-info">Post</button>
+            </div>
+    </form>
+
+    {% for post in posts %}
+        <article class="media content-section" style="margin-bottom: 0">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{% url 'user-profile' post.author.id %}">{{ post.author }}</a>
+              <small class="text-muted">{{ post.date_posted }}</small>
+            </div>
+            <h2><a class="article-title" href="#">{{ post.title }}</a></h2>
+            <p class="article-content">{{ post.content }}</p>
+          </div>
+        </article>
+
+        {% for comment in post.comments %}
+         <article class="media content-section" style="margin-bottom: 0">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{% url 'user-profile' comment.author.id %}">{{ comment.author }}</a>
+              <small class="text-muted">{{ comment.date_posted }}</small>
+            </div>
+            <p class="article-content">{{ comment.description }}</p>
+          </div>
+        </article>
+    {% endfor %}
+        <article class="media content-section">
+             <div class="media-body">
+                 <form method="post" action="{% url 'add-comment' post.id%}">
+                    {% csrf_token %}
+                    <fieldset class="form-group">
+                        {{ comment_form|crispy}}
+                    </fieldset>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-outline-info">Comment</button>
+                    </div>
+                </form>
+            </div>
+        </article>
+        <br/>
+    {% endfor %}
+{% endblock content %}
